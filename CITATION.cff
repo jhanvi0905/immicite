@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "immicite"
+abstract: >-
+  Cited answers on Canadian immigration rules for licensed practitioners. Every claim
+  links to the exact clause, ranked by legal authority, dated, and refused when
+  unsupported.
+authors:
+  - family-names: Arora
+    given-names: Jhanvi
+repository-code: "https://github.com/jhanvi0905/immicite"
+url: "https://github.com/jhanvi0905/immicite"
+license: Apache-2.0
+keywords:
+  - retrieval-augmented generation
+  - citations
+  - Canadian immigration law
