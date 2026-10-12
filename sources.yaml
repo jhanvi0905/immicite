@@ -1,0 +1,100 @@
+# The corpus registry: every document the ingest job pulls.
+# URLs and metadata only. Source text is never committed.
+#
+# authority, highest first: act, regulations, ministerial_instructions,
+#   officer_instructions, public_guidance.
+# kind: law_xml (Justice Laws consolidated XML) or web_page (a Canada.ca page).
+# url: what the job downloads. For law, web_url is the reading site that citations link to.
+# slug: given for law. A page's slug is derived from its url, so it is never written here.
+
+sources:
+  # ---- Law ----
+  - slug: irpa
+    title: Immigration and Refugee Protection Act
+    authority: act
+    kind: law_xml
+    ref_prefix: A
+    web_url: https://laws-lois.justice.gc.ca/eng/acts/I-2.5/
+    url: https://laws-lois.justice.gc.ca/eng/XML/I-2.5.xml
+    licence: Reproduction of Federal Law Order (SI/97-5)
+
+  - slug: irpr
+    title: Immigration and Refugee Protection Regulations
+    authority: regulations
+    kind: law_xml
+    ref_prefix: R
+    web_url: https://laws-lois.justice.gc.ca/eng/regulations/SOR-2002-227/
+    url: https://laws-lois.justice.gc.ca/eng/XML/SOR-2002-227.xml
+    licence: Reproduction of Federal Law Order (SI/97-5)
+
+  # ---- Officer instructions (program delivery instructions) ----
+  - title: "Study permits: Who needs a study permit"
+    authority: officer_instructions
+    kind: web_page
+    programs: [study-permit]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/temporary-residents/study-permits/who-needs-study-permit.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: "Study permits: Assessing the application"
+    authority: officer_instructions
+    kind: web_page
+    programs: [study-permit]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/temporary-residents/study-permits/assessing-application.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: Post-Graduation Work Permit Program
+    authority: officer_instructions
+    kind: web_page
+    programs: [pgwp]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/temporary-residents/study-permits/post-graduation-work-permit-program.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: "Canadian experience class: Qualifying skilled work experience in Canada"
+    authority: officer_instructions
+    kind: web_page
+    programs: [express-entry]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/permanent-residence/economic-classes/experience/qualifying-work-experience.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: "Federal skilled workers: Assessing against minimum requirements"
+    authority: officer_instructions
+    kind: web_page
+    programs: [express-entry]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/corporate/publications-manuals/operational-bulletins-manuals/permanent-residence/economic-classes/federal-skilled-workers/assessing-applications-against-minimum-requirements.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  # ---- Public guidance ----
+  - title: "Study permit: Who can apply"
+    authority: public_guidance
+    kind: web_page
+    programs: [study-permit]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit/eligibility.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: "Post-graduation work permit: About"
+    authority: public_guidance
+    kind: web_page
+    programs: [pgwp]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/work/after-graduation/about.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: "Post-graduation work permit: Who can apply"
+    authority: public_guidance
+    kind: web_page
+    programs: [pgwp]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/work/after-graduation/eligibility.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: "Express Entry: Canadian Experience Class eligibility"
+    authority: public_guidance
+    kind: web_page
+    programs: [express-entry]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/who-can-apply/canadian-experience-class.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
+
+  - title: "Express Entry: Federal Skilled Worker Program eligibility"
+    authority: public_guidance
+    kind: web_page
+    programs: [express-entry]
+    url: https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/who-can-apply/federal-skilled-workers.html
+    licence: Canada.ca terms and conditions (non-commercial reproduction)
