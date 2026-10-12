@@ -8,9 +8,10 @@ from uuid import UUID, uuid4
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from app.domain.corpus import ParsedDocument, Source, SourceStatus
+from app.domain.corpus import Authority, ParsedDocument, Source, SourceStatus
 from app.domain.hashing import text_hash
 from app.domain.ports import IngestAlreadyRunning
+from app.domain.retrieval import RetrievedSegment
 
 # Arbitrary constant identifying the ingest job to pg_advisory_lock.
 INGEST_LOCK_KEY = 0x696D6D69
@@ -315,3 +316,52 @@ class PostgresCorpusRepository:
                 )
             )
             return [SourceStatus(*row) for row in rows]
+
+    async def segments_by_ref(self, refs: Sequence[str]) -> list[RetrievedSegment]:
+        if not refs:
+            return []
+        async with self._engine.connect() as conn:
+            rows = await conn.execute(
+                text(f"{_RETRIEVED} WHERE seg.is_current AND seg.ref = ANY(:refs)"),
+                {"refs": list(refs)},
+            )
+            found = {segment.ref: segment for segment in map(_retrieved, rows)}
+        return [found[ref] for ref in dict.fromkeys(refs) if ref in found]
+
+    async def full_text_search(self, query: str, limit: int) -> list[RetrievedSegment]:
+        # A question rarely has every one of its words in one clause, so the words are
+        # joined with OR and the ranking decides. Only English text is searched for now.
+        async with self._engine.connect() as conn:
+            rows = await conn.execute(
+                text(
+                    f"""
+                    WITH q AS (
+                        SELECT replace(
+                            plainto_tsquery('english', :query)::text, '&', '|'
+                        )::tsquery AS tsq
+                    )
+                    {_RETRIEVED}, q
+                    WHERE seg.is_current AND seg.language = 'en' AND seg.tsv @@ q.tsq
+                    ORDER BY ts_rank_cd(seg.tsv, q.tsq) DESC, seg.ref
+                    LIMIT :limit
+                    """
+                ),
+                {"query": query, "limit": limit},
+            )
+            return [_retrieved(row) for row in rows]
+
+
+_RETRIEVED = """
+    SELECT seg.id, seg.ref, src.authority, seg.heading_path, seg.body, seg.url,
+           seg.last_amended_on
+    FROM segments seg
+    JOIN source_versions ver ON ver.id = seg.version_id
+    JOIN sources src ON src.id = ver.source_id
+"""
+
+
+def _retrieved(row) -> RetrievedSegment:
+    id_, ref, authority, heading_path, body, url, last_amended_on = row
+    return RetrievedSegment(
+        id_, ref, Authority(authority), tuple(heading_path), body, url, last_amended_on
+    )
