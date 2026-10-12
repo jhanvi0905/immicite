@@ -7,6 +7,7 @@ from typing import Protocol
 from uuid import UUID
 
 from app.domain.corpus import ParsedDocument, Source, SourceStatus
+from app.domain.retrieval import RetrievedSegment
 
 
 class IngestAlreadyRunning(Exception):
@@ -71,3 +72,15 @@ class CorpusRepository(Protocol):
     async def set_embeddings(self, embeddings: Mapping[UUID, list[float]]) -> None: ...
 
     async def status(self) -> list[SourceStatus]: ...
+
+
+class SegmentSearch(Protocol):
+    """Finds current segments. Only current segments are ever searched (ADR 0001)."""
+
+    async def segments_by_ref(self, refs: Sequence[str]) -> list[RetrievedSegment]:
+        """The current segments with these refs, in the order given. Unknown refs are skipped."""
+        ...
+
+    async def full_text_search(self, query: str, limit: int) -> list[RetrievedSegment]:
+        """Segments whose text shares words with the query, best match first."""
+        ...

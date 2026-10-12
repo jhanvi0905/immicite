@@ -109,6 +109,9 @@ loads only when a parser for it exists in the repo; otherwise it is recorded as 
 and public policies at their own authority level.
 
 ### 3.2 Ask: single pass (Planned)
+Built and tested so far, with nothing calling them yet: the ref router (step 2), full-text
+search and rank fusion (parts of step 4).
+
 1. Work out the program. Use the one in the request, or classify the question with a
    small model. Below a confidence threshold, search with no program filter (ADR 0015).
 2. Route exact refs such as R205(c) or A40(1) directly to their segments.

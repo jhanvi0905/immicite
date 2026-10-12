@@ -343,3 +343,35 @@ async def test_sources_are_ordered_by_authority(repository):
     await ingest([SOURCE, act], reader, repository)
 
     assert [s.slug for s in await repository.status()] == ["act", "regs"]
+
+
+async def test_segments_by_ref_returns_current_segments_in_the_order_asked(repository):
+    await ingest([SOURCE], FakeSourceReader({"regs": DOCUMENT}), repository)
+    await ingest([SOURCE], FakeSourceReader({"regs": AMENDED}), repository)
+
+    second, first = await repository.segments_by_ref(["R1(2)", "R9", "R1(1)", "R1(2)"])
+
+    assert (second.ref, second.body) == ("R1(2)", "Students may not work.")
+    assert (first.ref, first.authority, first.heading_path, first.url, first.last_amended_on) == (
+        "R1(1)",
+        Authority.REGULATIONS,
+        ("Part 1",),
+        URL,
+        date(2020, 1, 1),
+    )
+    assert await repository.segments_by_ref([]) == []
+
+
+async def test_full_text_search_ranks_by_shared_words_and_needs_only_one(repository):
+    third = ParsedSegment(
+        "R1(3)", "R1", "subsection", 1, ("Part 1",), "Students may study.", URL, date(2020, 1, 1)
+    )
+    document = replace(DOCUMENT, segments=(*DOCUMENT.segments, third))
+    await ingest([SOURCE], FakeSourceReader({"regs": document}), repository)
+
+    hits = await repository.full_text_search("can students work while their permits last?", 10)
+
+    assert [hit.ref for hit in hits] == ["R1(2)", "R1(1)", "R1(3)"]
+    assert [hit.ref for hit in await repository.full_text_search("students", 1)] == ["R1(2)"]
+    assert await repository.full_text_search("the of and", 10) == []
+    assert await repository.full_text_search("citizenship", 10) == []
